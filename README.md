@@ -1,155 +1,173 @@
-SSD Implementation in Pytorch
+Faster R-CNN Implementation in Pytorch
 ========
 
-This repository implements SSD, with training, inference and mAP evaluation in PyTorch.
-Most of the code is just parts of pytorch ssd implementation and all I have done is gotten rid of abstractions and commented the code.
+This repository implements [Faster R-CNN](https://arxiv.org/abs/1506.01497) with training, inference and map evaluation in PyTorch.
+The aim was to create a simple implementation based on PyTorch faster r-cnn codebase and to get rid of all the abstractions and make the implementation easy to understand.
 
-The repo provides code to train on voc dataset. Specifically I trained on trainval images of VOC 2007 dataset and for testing, I use VOC2007 test set.
+The implementation caters to batch size of 1 only and uses roi pooling on single scale feature map.
+The repo is meant to train faster r-cnn on voc dataset. Specifically I trained on VOC 2007 dataset.
 
-## SSD Explanation and Implementation Video
-<a href="https://youtu.be/c_nEue9itwg">
-   <img alt="SSD Explanation and Implementation" src="https://github.com/user-attachments/assets/663754cf-93a7-4b7a-9a0f-ff094f73e90a" width="400">
+
+## Faster R-CNN Explanation Video
+
+<a href="https://youtu.be/itjQT-gFQBY">
+   <img alt="Faster R-CNN Explanation" src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/4da49766-d216-4c5a-b619-44ab269e0a7b"
+   width="300">
+</a>
+
+## Faster R-CNN Implementation Video
+
+<a href="https://youtu.be/Qq1yfWDdj5Y">
+   <img alt="Faster R-CNN Implementation" src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/fc24c80f-4ddf-45e7-ad1d-9989bc978f10"
+   width="300">
+</a>
+
+## Faster R-CNN PyTorch Code Walkthrough Video
+<a href="https://www.youtube.com/watch?v=YA7BqiUTCwM">
+   <img alt="Faster R-CNN Implementation" src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/d6d9a889-abbb-42c3-92df-635ff4457bb4"
+   width="300">
 </a>
 
 
-## Result by training SSD on VOC 2007 dataset 
-One should be able to get **71-72% mAP** by training on VOC 2007 trainval images(**68% reported in paper**).
-
-Adding 2012 trainval we should be able to get **>77% mAP**
-
-<img src="https://github.com/user-attachments/assets/e21e3344-a0b7-4c91-b06d-6b83f62df0b0" width="250">
-<img src="https://github.com/user-attachments/assets/0d128c3e-d4ab-4335-a18f-77b7553f9634" width="250">
-<img src="https://github.com/user-attachments/assets/1c588ab8-975e-4ece-bb2e-679d6b9fb18d" width="250">
+## Sample Output by training Faster R-CNN on VOC 2007 dataset 
+Ground Truth(Left) | Prediction(right)
 </br>
-
-Here's an evaluation result that I got after training 100 epochs.
-```
-Class Wise Average Precisions
-AP for class aeroplane = 0.7552
-AP for class bicycle = 0.8384
-AP for class bird = 0.7025
-AP for class boat = 0.6543
-AP for class bottle = 0.3411
-AP for class bus = 0.8355
-AP for class car = 0.8611
-AP for class cat = 0.8682
-AP for class chair = 0.4798
-AP for class cow = 0.7453
-AP for class diningtable = 0.7092
-AP for class dog = 0.8582
-AP for class horse = 0.8506
-AP for class motorbike = 0.8259
-AP for class person = 0.7721
-AP for class pottedplant = 0.3939
-AP for class sheep = 0.7300
-AP for class sofa = 0.7626
-AP for class train = 0.8615
-AP for class tvmonitor = 0.7260
-Mean Average Precision : 0.7286
-```
-
+<img src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/d9e8bfbb-d6c3-4cb7-955f-e401ebb9045c" width="300">
+<img src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/2fe01174-dd0d-4fee-afbd-45b5b45307b3" width="300">
+</br>
+<img src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/39f095d3-8f50-4cd7-89cb-cee655cfa76d" width="300">
+<img src="https://github.com/explainingai-code/FasterRCNN-PyTorch/assets/144267687/2860bb29-3691-419a-b436-0d67f08d82e0" width="300">
 
 ## Data preparation
 For setting up the VOC 2007 dataset:
-* Create a data directory inside SSD-Pytorch
-* Download VOC 2007 train/val data from http://host.robots.ox.ac.uk/pascal/VOC/voc2007 and copy the `VOC2007` directory inside `data` directory
-* Download VOC 2007 test data from http://host.robots.ox.ac.uk/pascal/VOC/voc2007 and copy the  `VOC2007` directory and name it as `VOC2007-test` directory inside `data`
-* If you want to use 2012 trainval images as well, then download VOC 2012 train/val data from http://host.robots.ox.ac.uk/pascal/VOC/voc2007 and copy the  `VOC2012` directory inside `data`
-  * Ensure to place all the directories inside the data folder of repo according to below structure
-      ```
-      SSD-Pytorch
-          -> data
-              -> VOC2007
-                  -> JPEGImages
-                  -> Annotations
-                  -> ImageSets
-              -> VOC2007-test
-                  -> JPEGImages
-                  -> Annotations
-              -> VOC2012 (if needed)
-                  -> JPEGImages
-                  -> Annotations
-                  -> ImageSets
-          -> tools
-              -> train.py
-              -> infer.py
-          -> config
-              -> voc.yaml
-          -> model
-              -> ssd.py 
-          -> dataset
-              -> voc.py
-      ```
+* Download VOC 2007 train/val data from http://host.robots.ox.ac.uk/pascal/VOC/voc2007 and name it as `VOC2007` folder
+* Download VOC 2007 test data from http://host.robots.ox.ac.uk/pascal/VOC/voc2007 and name it as `VOC2007-test` folder
+* Place both the directories inside the root folder of repo according to below structure
+    ```
+    FasterRCNN-Pytorch
+        -> VOC2007
+            -> JPEGImages
+            -> Annotations
+        -> VOC2007-test
+            -> JPEGImages
+            -> Annotations
+        -> tools
+            -> train.py
+            -> infer.py
+            -> train_torchvision_frcnn.py
+            -> infer_torchvision_frcnn.py
+        -> config
+            -> voc.yaml
+        -> model
+            -> faster_rcnn.py
+        -> dataset
+            -> voc.py
+    ```
 
 ## For training on your own dataset
 
-* Update the path for `train_im_sets`, `test_im_sets` in config
-* If you want to train on 2007+2012 trainval then have `train_im_sets` as `['data/VOC2007', 'data/VOC2012'] `
-* Modify dataset file `dataset/voc.py` to load images and annotations accordingly specifically `load_images_and_anns` method
-* Update the class list of your dataset in the dataset file.
-* Dataset class should return the following:
-    ```
+* Copy the VOC config(`config/voc.yaml`) and update the [dataset_params](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/config/voc.yaml#L1) and change the [task_name](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/config/voc.yaml#L35) as well as [ckpt_name](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/config/voc.yaml#L41) based on your own dataset.
+* Copy the VOC dataset(`dataset/voc.py`) class and make following changes:
+   * Update the classes list [here](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/dataset/voc.py#L61) (excluding background).
+   * Modify the [load_images_and_anns](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/dataset/voc.py#L13) method to returns a list of im_infos for all images, where each im_info is a dictionary with following keys:
+     ```        
+      im_info : {
+		'filename' : <image path>
+		'detections' : 
+			[
+				'label': <integer class label for this detection>, # assuming the same order as classes list present above, with background as zero index.
+				'bbox' : list of x1,y1,x2,y2 for the bboxes.
+			]
+	    }
+     ```
+* Ensure that `__getitem__` returns the following:
+  ```
   im_tensor(C x H x W) , 
   target{
-        'bboxes': Number of Gts x 4 (this is in x1y1x2y2 format normalized from 0-1)
+        'bboxes': Number of Gts x 4,
         'labels': Number of Gts,
-        'difficult': Number of Gts,
         }
-  file_path
+  file_path(just used for debugging)
   ```
+* Change the training script to use your dataset [here](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/tools/train_torchvision_frcnn.py#L41)
+* Then run training with the desired config passed as argument.
 
+
+## Differences from Faster RCNN paper
+This repo has some differences from actual Faster RCNN paper.
+* Caters to single batch size
+* Uses a randomly initialized fc6 fc7 layer of 1024 dim.
+* Most of the hyper-parameters have directly been picked from official version and have not been tuned to this setting of 1024 dimensional fc layers. As of now using this I am getting ~61-62% mAP.
+* To improve the results one can try the following:
+  * Use VGG fc6 and fc7 layers
+  * Tune the weight of different losses
+  * Experiment with roi batch size
+  * Experiment with hard negative mining
 
 ## For modifications 
-* In case you have GPU which does not support large batch size, you can use a smaller batch size like 2 and then have `acc_steps` in config set as 4(to mimic 8 batch size training).
-* For using a different backbone you would have to change the following:
-  * Change the backbone, extra conv layers and creation of feature maps in initialization of SSD model
-  * Ensure the `out_channels` is correctly set as the channels in all feature maps to be used for prediction [here](https://github.com/explainingai-code/SSD-PyTorch/blob/main/model/ssd.py#L316)
-  * In the forward method call the backbone and extra conv layers and ensure `outputs` is correctly set as list of feature maps [here](https://github.com/explainingai-code/SSD-PyTorch/blob/main/model/ssd.py#L472)
+* To change the fc dimension , change `fc_inner_dim` in config
+* To use a different backbone, make the change [here](https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/model/faster_rcnn.py#L748) and also change `backbone_out_channels` in config
+* To use hard negative mining change `roi_low_bg_iou` to say 0.1(this will ignore proposals with < 0.1 iou)
+* To use gradient accumulation change `acc_steps` in config to > 1
 
 # Quickstart
-* Create a new conda environment with python 3.10 then run below commands
-* ```git clone https://github.com/explainingai-code/SSD-PyTorch.git```
-* ```cd SSD-PyTorch```
+* Create a new conda environment with python 3.8 then run below commands
+* ```git clone https://github.com/explainingai-code/FasterRCNN-PyTorch.git```
+* ```cd FasterRCNN-PyTorch```
 * ```pip install -r requirements.txt```
-* For training/inference use the below commands passing the desired configuration file as the config argument in case you want to play with it. 
-* ```python -m tools.train``` for training SSD on VOC dataset
+* For training/inference use the below commands passing the desired configuration file as the config argument . 
+* ```python -m tools.train``` for training Faster R-CNN on voc dataset
 * ```python -m tools.infer --evaluate False --infer_samples True``` for generating inference predictions
 * ```python -m tools.infer --evaluate True --infer_samples False``` for evaluating on test dataset
 
+## Using torchvision FasterRCNN 
+* For training/inference using torchvision faster rcnn codebase, use the below commands passing the desired configuration file as the config argument.
+* ```python -m tools.train_torchvision_frcnn``` for training using torchvision pretrained Faster R-CNN class on voc dataset
+   * This uses the following arguments other than config file
+   * --use_resnet50_fpn
+      * True(default) - Use pretrained torchvision faster rcnn
+      * False - Build your own custom model using torchvision faster rcnn class)
+* ```python -m tools.infer_torchvision_frcnn``` for inference and testing purposes. Pass the desired configuration file as the config argument.
+   * This uses the following arguments other than config file
+   * --use_resnet50_fpn
+      * True(default) - Use pretrained torchvision faster rcnn
+      * False - Build your own custom model using torchvision faster rcnn class)
+      * Should be same value as used during training
+   * --evaluate (Whether to evaluate mAP on test dataset or not, default value is False)
+   * -- infer_samples (Whether to generate predicitons on some sample test images, default value is True)
+
 ## Configuration
-* ```config/voc.yaml``` - Allows you to play with different components of SSD on voc dataset  
+* ```config/voc.yaml``` - Allows you to play with different components of faster r-cnn on voc dataset  
 
 
 ## Output 
 Outputs will be saved according to the configuration present in yaml files.
 
-For every run a folder of `task_name` key in config will be created
+For every run a folder of ```task_name``` key in config will be created
 
-During training of SSD the following output will be saved 
+During training of FasterRCNN the following output will be saved 
 * Latest Model checkpoint in ```task_name``` directory
 
 During inference the following output will be saved
-* Sample prediction outputs for images in ```task_name/samples```
+* Sample prediction outputs for images in ```task_name/samples/*.png``` 
 
 ## Citations
 ```
-@article{DBLP:journals/corr/LiuAESR15,
-  author       = {Wei Liu and
-                  Dragomir Anguelov and
-                  Dumitru Erhan and
-                  Christian Szegedy and
-                  Scott E. Reed and
-                  Cheng{-}Yang Fu and
-                  Alexander C. Berg},
-  title        = {{SSD:} Single Shot MultiBox Detector},
+@article{DBLP:journals/corr/RenHG015,
+  author       = {Shaoqing Ren and
+                  Kaiming He and
+                  Ross B. Girshick and
+                  Jian Sun},
+  title        = {Faster {R-CNN:} Towards Real-Time Object Detection with Region Proposal
+                  Networks},
   journal      = {CoRR},
-  volume       = {abs/1512.02325},
+  volume       = {abs/1506.01497},
   year         = {2015},
-  url          = {http://arxiv.org/abs/1512.02325},
+  url          = {http://arxiv.org/abs/1506.01497},
   eprinttype    = {arXiv},
-  eprint       = {1512.02325},
-  timestamp    = {Wed, 12 Feb 2020 08:32:49 +0100},
-  biburl       = {https://dblp.org/rec/journals/corr/LiuAESR15.bib},
+  eprint       = {1506.01497},
+  timestamp    = {Mon, 13 Aug 2018 16:46:02 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/RenHG015.bib},
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 ```
