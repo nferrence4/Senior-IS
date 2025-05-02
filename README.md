@@ -3,6 +3,8 @@ This repository contains the Jupyter Notbooks for my Senior Capstone Project. Th
 This project is based on code from the py-faster-rcnn repository by Ross Girshick.
 Please cite the original authors if you use this work in your research or project.
 
+https://github.com/explainingai-code/FasterRCNN-PyTorch/blob/main/tools/infer_torchvision_frcnn.py
+
 @article{DBLP:journals/corr/RenHG015,
   author       = {Shaoqing Ren and
                   Kaiming He and
@@ -20,6 +22,8 @@ Please cite the original authors if you use this work in your research or projec
 
 Parts of this project are from the SSD: Single Shot MultiBox Detector implementation by Wei Liu et al.
 Please cite the original authors if you use this work in your research or project.
+
+https://github.com/explainingai-code/SSD-PyTorch
 
 @article{DBLP:journals/corr/LiuAESR15,
   author       = {Wei Liu and
@@ -41,6 +45,8 @@ Please cite the original authors if you use this work in your research or projec
 Parts of this project are from the YOLOv5 by Ultralytics by Glenn Jocher.
 Please cite the original authors if you use this work in your research or project.
 
+https://github.com/ultralytics/yolov5
+
 cff-version: 1.2.0
 preferred-citation:
   type: software
@@ -58,6 +64,8 @@ preferred-citation:
 
 Parts of this project are from the Detectron2 by Yanghan Wang.
 Please cite the original authors if you use this work in your research or project.
+
+https://github.com/facebookresearch/detectron2/tree/main
 
 @misc{wu2019detectron2,
   author =       {Yuxin Wu and Alexander Kirillov and Francisco Massa and
