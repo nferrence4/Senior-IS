@@ -75,4 +75,16 @@ https://github.com/facebookresearch/detectron2/tree/main
   year =         {2019}
 }
 
+The datasets can be found here:
+VOC2007
+http://host.robots.ox.ac.uk/pascal/VOC/voc2007/
+
+VOC2012
+http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
+
+Vehicles(RoboFlow)
+https://universe.roboflow.com/roboflow-100/vehicles-q0x2v
+
+COCO128
+https://docs.ultralytics.com/datasets/detect/coco128/
 
